@@ -3,56 +3,174 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Girlfriend Chatbot</title>
-    <link rel="stylesheet" href="/static/style.css">
-    <link rel="icon" href="/static/favicon.png" type="image/png">
+    <title>Your Only AI Girlfriend</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Arial', sans-serif;
+        }
+    
+        /* Background image with blur and zoom effect */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('https://images.unsplash.com/photo-1657640606520-e695cbb1e14b?q=80&w=1964&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
+            background-size: cover;
+            background-position: center;
+            filter: blur(8px);
+            transform: scale(1.2); /* Zoom effect */
+            z-index: -1;
+        }
+    
+        .chat-container {
+            position: relative;
+            width: 500px;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            z-index: 1;
+        }
+    
+        h1 {
+            text-align: center;
+            color: #E0218A;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+    
+        .chat-box {
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 10px;
+            border: 1px solid #FF82AB;
+            background-color: #FFF0F5;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column; /* Ensures messages are stacked vertically */
+        }
+    
+        .message {
+            display: inline-block; /* Makes message box fit content */
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 1em;
+            max-width: 75%; /* Limits the width to 75% of container */
+            word-wrap: break-word; /* Ensures long words wrap */
+            clear: both; /* Forces each message onto a new line */
+        }
+    
+        .user-message {
+            background-color: #FF82AB; /* Light pink background */
+            color: #FFF; /* White text color */
+            align-self: flex-end; /* Aligns user messages to the right */
+        }
+    
+        .bot-message {
+            background-color: #E0218A; /* Darker pink background */
+            color: #FFF; /* White text color */
+            align-self: flex-start; /* Aligns bot messages to the left */
+        }
+    
+        .input-box {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+        }
+    
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #E0218A;
+            border-radius: 10px;
+            font-size: 1em;
+        }
+    
+        button {
+            padding: 10px;
+            background-color: #E0218A;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+    
+        button:hover {
+            background-color: #FF82AB;
+        }
+    </style>
+    
+    
+    
+       
 </head>
 <body>
-    <div id="chat-container">
-        <header>
-            <h1>AI Girlfriend Chatbot ❤️</h1>
-        </header>
-        <div id="chat-box">
-            <div id="messages"></div>
-            <div id="input-container">
-                <input type="text" id="user-input" placeholder="Type your message here...">
-                <button onclick="sendMessage()">Send</button>
-            </div>
+    <div class="chat-container">
+        <h1>Your Only AI Girlfriend</h1>
+        <div class="chat-box" id="chat-box">
+            <div class="message bot-message">Hi, I'm Jennifer! Let's chat 😘</div>
+        </div>
+        <div class="input-box">
+            <input type="text" id="user-input" placeholder="Type your message...">
+            <button onclick="sendMessage()">Send</button>
         </div>
     </div>
 
     <script>
-        async function sendMessage() {
-            const message = document.getElementById('user-input').value;
-            if (!message.trim()) return;
-
-            const chatBox = document.getElementById('messages');
-
-            // Display user message
-            chatBox.innerHTML += `<div class="message user-message"><p>${message}</p></div>`;
-
-            // Fetch AI response
-            const response = await fetch('/chat', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({message})
-            });
-            const result = await response.json();
-
-            // Display AI response
-            chatBox.innerHTML += `<div class="message ai-message"><p>${result.response}</p></div>`;
-            chatBox.scrollTop = chatBox.scrollHeight; // Scroll to bottom
-
-            // Clear input field
-            document.getElementById('user-input').value = '';
+        function sendMessage() {
+            var userInput = document.getElementById("user-input").value;
+            var chatBox = document.getElementById("chat-box");
+    
+            if (userInput.trim() !== "") {
+                // Display user message
+                var userMessage = document.createElement("div");
+                userMessage.classList.add("message", "user-message");
+                userMessage.innerHTML = userInput;
+                chatBox.appendChild(userMessage);
+    
+                // Clear the input field
+                document.getElementById("user-input").value = "";
+    
+                // Send the user message to the server
+                fetch('/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ message: userInput })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Display bot response
+                    var botMessage = document.createElement("div");
+                    botMessage.classList.add("message", "bot-message");
+                    botMessage.innerHTML = data.response;
+                    chatBox.appendChild(botMessage);
+    
+                    // Scroll chat to the bottom
+                    chatBox.scrollTop = chatBox.scrollHeight;
+                });
+            }
         }
-
-        document.getElementById('user-input').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
+    
+        // Add event listener for Enter key
+        document.getElementById("user-input").addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                event.preventDefault();  // Prevent the default action (e.g., form submission)
                 sendMessage();
             }
         });
-    </script>
+    </script>    
 </body>
 </html>
