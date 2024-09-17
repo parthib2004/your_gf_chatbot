@@ -1,6 +1,5 @@
 from flask import Flask, request, render_template, jsonify
 from chatbot.conversation import custom_response
-from db.db_config import save_conversation
 
 app = Flask(__name__)
 
@@ -24,9 +23,6 @@ def chat():
         # Generate chatbot response
         response = custom_response(user_input)
         
-        # Save conversation to MongoDB
-        save_conversation(user_id, user_input, response)
-        
         # Return the chatbot response as JSON
         return jsonify({'response': response})
 
@@ -35,4 +31,3 @@ def chat():
 
 if __name__ == "__main__":
     app.run(debug=True)
-
